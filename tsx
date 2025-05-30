@@ -1,7 +1,12 @@
 import React from 'react';
 
-const Layout: React.FC = ({ children }) => {
-  return <div>{children}</div>;
+interface ButtonProps {
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const Button: React.FC<ButtonProps> = ({ onClick, children }) => {
+  return <button onClick={onClick}>{children}</button>;
 };
 
-export default Layout;
+export default Button;
