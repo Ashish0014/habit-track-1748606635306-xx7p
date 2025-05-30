@@ -1,18 +1,35 @@
-import React from 'react';
-import { Habit } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { supabase } from '../utils/supabase';
+import { Habit } from '../types';
+import HabitList from '../components/Feature/HabitList';
 
-interface HabitListProps {
-  habits: Habit[];
-}
+const HomePage: React.FC = () => {
+  const [habits, setHabits] = useState<Habit[]>([]);
 
-const HabitList: React.FC<HabitListProps> = ({ habits }) => {
+  useEffect(() => {
+    const fetchHabits = async () => {
+      try {
+        const { data, error } = await supabase.from('habits').select('*');
+        if (error) {
+          throw error;
+        }
+        if (data) {
+          setHabits(data);
+        }
+      } catch (error) {
+        console.error('Error fetching habits:', error.message);
+      }
+    };
+
+    fetchHabits();
+  }, []);
+
   return (
-    <ul>
-      {habits.map((habit) => (
-        <li key={habit.id}>{habit.name}</li>
-      ))}
-    </ul>
+    <div>
+      <h1>My Habits</h1>
+      <HabitList habits={habits} />
+    </div>
   );
 };
 
-export default HabitList;
+export default HomePage;
