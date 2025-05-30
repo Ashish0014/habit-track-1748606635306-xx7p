@@ -1,35 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabase';
-import { Habit } from '../types';
-import HabitList from '../components/Feature/HabitList';
 
-const HomePage: React.FC = () => {
-  const [habits, setHabits] = useState<Habit[]>([]);
+const useAuth = () => {
+  const [user, setUser] = useState(supabase.auth.user());
 
   useEffect(() => {
-    const fetchHabits = async () => {
-      try {
-        const { data, error } = await supabase.from('habits').select('*');
-        if (error) {
-          throw error;
-        }
-        if (data) {
-          setHabits(data);
-        }
-      } catch (error) {
-        console.error('Error fetching habits:', error.message);
-      }
-    };
+    const session = supabase.auth.session();
+    setUser(session?.user ?? null);
 
-    fetchHabits();
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener?.unsubscribe();
+    };
   }, []);
 
-  return (
-    <div>
-      <h1>My Habits</h1>
-      <HabitList habits={habits} />
-    </div>
-  );
+  const signIn = async () => {
+    await supabase.auth.signIn();
+  };
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
+  return { user, signIn, signOut };
 };
 
-export default HomePage;
+export default useAuth;
