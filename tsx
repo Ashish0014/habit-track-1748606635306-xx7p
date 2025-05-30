@@ -1,12 +1,18 @@
 import React from 'react';
+import { Habit } from '../../types';
 
-interface ButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
+interface HabitListProps {
+  habits: Habit[];
 }
 
-const Button: React.FC<ButtonProps> = ({ onClick, children }) => {
-  return <button onClick={onClick}>{children}</button>;
+const HabitList: React.FC<HabitListProps> = ({ habits }) => {
+  return (
+    <ul>
+      {habits.map((habit) => (
+        <li key={habit.id}>{habit.name}</li>
+      ))}
+    </ul>
+  );
 };
 
-export default Button;
+export default HabitList;
